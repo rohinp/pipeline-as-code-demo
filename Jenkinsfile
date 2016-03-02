@@ -16,6 +16,8 @@ parallel(longerTests: {
 
 stage name: 'Staging', concurrency: 1
 node {
+    step([$class:'ArtifactArchiver',artifacts:'**/target/*.jar',fingerprint:true])
+    step([$class:'JUnitResultArchiver',testResults:'**/target/surefire-reports/TEST-*.xml'])
     deploy 'staging'
 }
 
