@@ -5,6 +5,8 @@ node {
     checkout scm
     mvn 'clean package'
     dir('target') {stash name: 'war', includes: 'x.war'}
+    step([$class:'ArtifactArchiver',artifacts:'**/target/*.jar',fingerprint:true])
+    step([$class:'JUnitResultArchiver',testResults:'**/target/surefire-reports/TEST-*.xml'])
 }
 
 stage 'QA'
@@ -16,8 +18,6 @@ parallel(longerTests: {
 
 stage name: 'Staging', concurrency: 1
 node {
-    step([$class:'ArtifactArchiver',artifacts:'**/target/*.jar',fingerprint:true])
-    step([$class:'JUnitResultArchiver',testResults:'**/target/surefire-reports/TEST-*.xml'])
     deploy 'staging'
 }
 
